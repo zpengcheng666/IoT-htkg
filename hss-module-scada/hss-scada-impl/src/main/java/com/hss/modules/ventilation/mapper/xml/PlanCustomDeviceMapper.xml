@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.ventilation.mapper.PlanCustomDeviceMapper">
+    <delete id="delByPlanId">
+        delete T_VENTILATION_PLAN_DEVICE where CUSTOM_PLAN_ID = #{planId}
+    </delete>
+
+    <select id="listDeviceByPlanId" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.NAME, d.ID from CON_SHEBEI d inner join T_VENTILATION_PLAN_DEVICE pd on d.ID = pd.DEVICE_ID where pd.CUSTOM_PLAN_ID = #{planId}
+    </select>
+</mapper>

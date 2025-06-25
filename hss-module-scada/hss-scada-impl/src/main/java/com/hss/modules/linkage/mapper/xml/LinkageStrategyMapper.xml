@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.linkage.mapper.LinkageStrategyMapper">
+
+    <select id="getPage" resultType="com.hss.modules.linkage.entity.LinkageStrategy">
+        select * from T_LINKAGE_STRATEGY where NAME like  concat('%',#{name}, '%')
+    </select>
+    <select id="listConditionEnableByExpression" resultType="com.hss.modules.linkage.entity.LinkageStrategy">
+        select * from T_LINKAGE_STRATEGY where IS_ENABLE = 1 and TYPE = 'condition' and EXPRESSION = concat('%',#{expressionVar}, '%')
+    </select>
+    <select id="listEnableByType" resultType="com.hss.modules.linkage.entity.LinkageStrategy">
+        select * from T_LINKAGE_STRATEGY where TYPE = #{type} and IS_ENABLE = '1'
+    </select>
+    <select id="listEnableByTypeAndAlarmStrategyId"
+            resultType="com.hss.modules.linkage.entity.LinkageStrategy">
+        select * from T_LINKAGE_STRATEGY where TYPE = #{type} and IS_ENABLE = '1' and ALARM_STRATEGY_ID = #{alarmStrategyId}
+    </select>
+    <select id="listOutAttrIdsByAttrId" resultType="java.lang.String">
+        select a.OPERATION_ID from T_LINKAGE_STRATEGY l
+                                       inner join T_EVENT e on l.EVENT_ID = e.ID
+                                       inner join T_EVENT_ACTION a on e.id = a.EVENT_ID
+        where EXPRESSION like concat('%', #{attrId}, '%')
+    </select>
+    <select id="listByEventId" resultType="com.hss.modules.linkage.entity.LinkageStrategy">
+        select * from T_LINKAGE_STRATEGY where EVENT_ID = #{eventId}
+    </select>
+    <select id="listEnableByTypeAndAlarmStrategyIds"
+            resultType="com.hss.modules.linkage.entity.LinkageStrategy">
+        SELECT S.* FROM T_LINKAGE_STRATEGY S
+            INNER JOIN (select MIN(ID) ID, EVENT_ID
+            from T_LINKAGE_STRATEGY
+            where TYPE= 'alarmAck' and IS_ENABLE = '1' and ALARM_STRATEGY_ID in
+            <foreach collection="ids" open="(" separator="," item="id" close=")">#{id}</foreach>
+            group by EVENT_ID) E ON S.ID = E.ID
+    </select>
+
+</mapper>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.InventoryMovementDetailMapper">
+
+    <select id="listByOrderId" resultType="com.hss.modules.spare.model.MovementDetailItem">
+        select it.ITEM_NAME, it.ITEM_NO, ip.TYPE_NAME as ITEM_TYPE_NAME, m.SOURCE_AREA_ID SOURCE, m.TARGET_AREA_ID TARGET, m.QUANTITY
+        from BP_INVENTORY_MOVEMENT_DETAIL m inner join BP_ITEM it on m.ITEM_ID = it.ID  inner join BP_ITEM_TYPE ip on ip.ID = it.ITEM_TYPE
+        WHERE m.INVENTORY_MOVEMENT_ID = #{orderId}
+    </select>
+</mapper>

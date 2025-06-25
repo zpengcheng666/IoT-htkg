@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.PublishSatelliteSecureTerminalMapper">
+
+    <delete id="removeByMsgId">
+        delete T_SECURE_TERMINAL where MSG_ID = #{msgId}
+    </delete>
+    <select id="listTerminalIdByMessageId" resultType="java.lang.String">
+        select TERMINAL_ID from T_SECURE_TERMINAL where MSG_ID in <foreach collection="msgIds" separator="," item="msgId" close=")" open="(">#{msgId}</foreach>
+    </select>
+</mapper>

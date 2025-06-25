@@ -1,0 +1,117 @@
+spring:
+  #json 时间戳统一转换
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle10gDialect  # 改为Oracle方言
+  aop:
+    proxy-target-class: true
+  #配置freemarker
+  freemarker:
+    suffix: .ftl
+    content-type: text/html
+    charset: UTF-8
+    cache: false
+    prefer-file-system-access: false
+    template-loader-path:
+      - classpath:/templates
+  mvc:
+    static-path-pattern: /**
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  resource:
+    static-locations: classpath:/static/,classpath:/public/
+
+  # Oracle数据源配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: oracle.jdbc.OracleDriver
+      url: jdbc:oracle:thin:@localhost:1521:orcl
+      username: HSS
+      password: zhpenn1991
+      # 连接池配置
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      # 连接检测配置
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # 监控配置
+      filters: stat,wall
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 2000
+      # 连接池回收配置
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      # 打开PSCache
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+
+  #redis 配置
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password: ''
+
+#mybatis plus 设置
+mybatis-plus:
+  mapper-locations: [classpath*:com/hss/modules/**/xml/*Mapper.xml,classpath*:com/hss/core/modules/**/xml/*Mapper.xml]
+  global-config:
+    banner: false
+    db-config:
+      id-type: ASSIGN_ID
+      table-underline: true
+      # Oracle特定配置
+      schema: HSS  # Oracle模式名
+  configuration:
+    # 打印SQL（开发环境可开启）
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
+    # Oracle大写命名策略
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 25000
+
+#Hss专用配置
+jeecg:
+  authMode: false
+  authModeKey: HTKG
+  safeMode: false
+  uploadType: local
+  domainUrl:
+    pc: http://localhost:3100
+    app: http://localhost:8051
+  path:
+    upload: /var/upFiles/
+    voice: /var/upFiles/voice/
+    ditu: /var/upFiles/ditu/
+    webapp: /opt/webapp
+    img:
+      url: http://192.168.206.128:8081
+  shiro:
+    excludeUrls: /system/filesUtil/**,/category/**,/visual/**
+  minio:
+    minio_url: 118.31.40.197:9090
+    minio_name: minioadmin
+    minio_pass: minioadmin
+    bucketName: hss
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.hss: INFO
+    org.springframework: INFO
+    com.alibaba.druid: INFO
+    oracle.jdbc: INFO

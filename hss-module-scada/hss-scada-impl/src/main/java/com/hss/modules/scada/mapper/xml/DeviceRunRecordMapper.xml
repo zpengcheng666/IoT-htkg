@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.scada.mapper.DeviceRunRecordMapper">
+
+    <select id="getLastByDeviceId" resultType="com.hss.modules.scada.entity.DeviceRunRecord">
+        select TOP 1 * from DEVICE_RUN_RECORD where DEVICE_ID = #{deviceId} ORDER BY ID DESC
+    </select>
+    
+    <select id="lastTime" resultType="java.util.Map">
+        SELECT MAX(RECORD_TIME) AS RECORD_TIME, DEVICE_STATE FROM DEVICE_RUN_RECORD
+        WHERE DEVICE_ID = #{deviceId}
+        GROUP BY DEVICE_STATE
+    </select>
+
+    <select id="sumTime" resultType="java.lang.Long">
+        SELECT SUM(SUM_TIME) FROM DEVICE_RUN_RECORD WHERE DEVICE_ID = #{deviceId} AND DEVICE_STATE = 1
+    </select>
+</mapper>

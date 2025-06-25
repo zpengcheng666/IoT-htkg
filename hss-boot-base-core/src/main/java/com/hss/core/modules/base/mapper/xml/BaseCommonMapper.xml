@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.core.modules.base.mapper.BaseCommonMapper">
+
+    <!-- 保存日志11 -->
+    <insert id="saveLog" parameterType="Object">
+        insert into BASE_LOG_OPERATION (id, user_id, username, state_time, operate_content, record_name, record_id)
+        values(
+            #{dto.id,jdbcType=VARCHAR},
+            #{dto.userId,jdbcType=VARCHAR},
+            #{dto.username,jdbcType=VARCHAR},
+            #{dto.stateTime,jdbcType=TIMESTAMP},
+            #{dto.logContent,jdbcType=VARCHAR},
+            #{dto.method,jdbcType=VARCHAR},
+            #{dto.requestUrl,jdbcType=VARCHAR}
+        )
+    </insert>
+
+</mapper>

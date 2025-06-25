@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.devicetype.mapper.DeviceTypeManagementMapper">
+
+    <select id="getPage" resultType="com.hss.modules.devicetype.entity.DeviceTypeManagement">
+        select * from T_DEVICE_TYPE_MANAGEMENT
+        <if test="name != null and name != ''">where NAME like concat('%',#{name},'%')</if>
+    </select>
+    <select id="getByType" resultType="com.hss.modules.devicetype.entity.DeviceTypeManagement">
+        select * from T_DEVICE_TYPE_MANAGEMENT where TYPE = #{type}
+    </select>
+    <select id="listNameByIds" resultType="com.hss.modules.scada.model.DeviceTypeIdNameBO">
+        select ID,NAME from T_DEVICE_TYPE_MANAGEMENT where ID in <foreach collection="ids" open="(" separator="," close=")" item="id">#{id}</foreach>
+    </select>
+    <resultMap id="listExcelMap" type="com.hss.modules.devicetype.model.DeviceTypeExcel">
+        <result property="id" column="DID"></result>
+        <result property="name" column="DNAME"></result>
+        <result property="type" column="TYPE"></result>
+        <collection property="attrList" ofType="com.hss.modules.devicetype.model.DeviceTypeAttrExcel">
+            <result property="id" column="ID"></result>
+            <result property="name" column="NAME"></result>
+            <result property="category" column="CATEGORY"></result>
+            <result property="dataType" column="DATA_TYPE"></result>
+            <result property="initValue" column="INIT_VALUE"></result>
+            <result property="minValue" column="MIN_VALUE"></result>
+            <result property="maxValue" column="MAX_VALUE"></result>
+            <result property="unit" column="UNIT"></result>
+            <result property="sortNumber" column="SORT_NUMBER"></result>
+            <result property="displayAreas" column="DISPLAY_AREAS"></result>
+            <result property="isAct" column="IS_ACT"></result>
+            <result property="isAssociate" column="IS_ASSOCIATE"></result>
+            <result property="isAssociateVar" column="IS_ASSOCIATE_VAR"></result>
+            <result property="isConfigurable" column="IS_CONFIGURABLE"></result>
+            <result property="isSave" column="IS_SAVE"></result>
+            <result property="typeId" column="TYPE_ID"></result>
+            <result property="actOrders" column="ACT_ORDERS"></result>
+            <result property="configOptions" column="CONFIG_OPTIONS"></result>
+            <result property="valueMap" column="VALUE_MAP"></result>
+        </collection>
+
+    </resultMap>
+    <select id="listExcel" resultMap="listExcelMap">
+        select d.id DID , d.NAME DNAME, d.TYPE type,a.* from T_DEVICE_TYPE_MANAGEMENT d inner join T_DEVICE_TYPE_ATTRIBUTE a on d.ID = a.TYPE_ID order by d.ID, a.SORT_NUMBER
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.system.mapper.BaseUserMapper">
+
+    <update id="changePwd" parameterType="com.hss.modules.system.entity.BaseUser">
+        UPDATE BASE_USER SET PASSWORD=#{password},SALT=#{salt}
+            WHERE ID=#{id}
+    </update>
+
+    <select id="organName" resultType="java.lang.String">
+        SELECT distinct o.NAME FROM BASE_USER u
+            LEFT JOIN BASE_ORGANIZATION o ON u.ORGANIZATION_ID = o.ID
+        <where>
+            <if test="ORGANIZATION_ID != null and ORGANIZATION_ID != ''">
+                u.ORGANIZATION_ID = #{organizationId}
+            </if>
+        </where>
+    </select>
+
+    <select id="papersName" resultType="java.lang.String">
+        SELECT distinct d.NAME FROM BASE_USER u
+        LEFT JOIN BASE_DICT_DATA d ON u.PAPERS_ID = d.ID
+        <where>
+            <if test="papersId != null and papersId != ''">
+                u.PAPERS_ID = #{papersId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

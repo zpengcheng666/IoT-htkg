@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.PublishNoticeMapper">
+<!--    <resultMap id="listPageMap" type="com.hss.modules.message.entity.PublishNotice">-->
+<!--        <id column="ID" property="id"/>-->
+<!--        <result column="TITLE" property="title"/>-->
+<!--        <result column="CONTENT" property="content"/>-->
+<!--        <result column="EFFECTIVE_TIME" property="effectiveTime"/>-->
+<!--        <result column="OVERDUE_TIME" property="overdueTime"/>-->
+<!--        <result column="PUBLISH_TIME" property="publishTime"/>-->
+<!--        <result column="PUBLISHER" property="publisher"/>-->
+<!--        <result column="PUBLISH_TYPE" property="publishType"/>-->
+<!--        <result column="STATE" property="state"/>-->
+<!--        <result column="MESSAGE_TYPE" property="messageType"/>-->
+<!--        <collection property="terminalIds" ofType="string">-->
+<!--            <result column="TERMINAL_ID"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+    <select id="listByTerminal" resultType="com.hss.modules.message.entity.PublishNotice">
+        select p.*
+        from T_PUBLISH_NOTICE p
+                     inner join T_NOTICE_R_TERMINAL t on p.ID = t.NOTICE_ID
+        where p.STATE = 2
+          and t.TERMINAL_ID = #{terminalId}
+          and p.EFFECTIVE_TIME &lt;= #{now}
+          and p.OVERDUE_TIME &gt;= #{now}
+    </select>
+    <select id="listIdInByDate" resultType="java.lang.String">
+        select ID
+        from T_PUBLISH_NOTICE
+        where EFFECTIVE_TIME &lt;= #{now}
+          and OVERDUE_TIME &gt;= #{now}
+          and STATE = 1
+    </select>
+    <select id="listIdsOutByDate" resultType="java.lang.String">
+        select ID
+        from T_PUBLISH_NOTICE
+        where OVERDUE_TIME &lt; #{now}
+          and STATE != 3
+    </select>
+    <select id="queryPage" resultType="com.hss.modules.message.entity.PublishNotice">
+        <!--        select p.* from T_PUBLISH_NOTICE p inner join T_NOTICE_R_TERMINAL t on p.ID = t.NOTICE_ID-->
+        <!--            where  t.TERMINAL_ID in-->
+        <!--                <foreach collection="terminalIds" open="(" separator="," close=")" item="item">-->
+        <!--                        #{item}-->
+        <!--                </foreach>-->
+        select p.*
+        from T_PUBLISH_NOTICE p
+                WHERE p.ID in
+                (select DISTINCT a.NOTICE_ID
+                 from T_NOTICE_R_TERMINAL a
+                WHERE a.TERMINAL_ID in
+        <foreach collection="terminalIds" open="(" separator="," close=")" item="item">
+            #{item}
+        </foreach>
+        )
+    </select>
+    <select id="listNotOverList" resultType="com.hss.modules.message.entity.PublishNotice">
+        <!--select * from t_publish_notice where state != 3-->
+        select * from T_PUBLISH_NOTICE where STATE != 3
+    </select>
+</mapper>

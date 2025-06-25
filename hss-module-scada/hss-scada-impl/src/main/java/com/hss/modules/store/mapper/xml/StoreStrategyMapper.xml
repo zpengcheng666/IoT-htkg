@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.store.mapper.StoreStrategyMapper">
+    <delete id="deleteByDeviceId">
+        delete from STORE_STRATEGY where DEVICE_ID = #{deviceId}
+    </delete>
+
+    <select id="getPage" resultType="com.hss.modules.store.entity.StoreStrategy">
+        select * from STORE_STRATEGY
+        <where>
+            <if test="deviceId != null and deviceId != ''">
+                DEVICE_ID = #{deviceId}
+            </if>
+            <if test="name != null and name != ''">
+                and NAME like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="listByDeviceId" resultType="com.hss.modules.store.entity.StoreStrategy">
+        select * from STORE_STRATEGY where DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listByTypeStrategyId" resultType="com.hss.modules.store.entity.StoreStrategy">
+        select * from STORE_STRATEGY where STRATEGY_ID = #{typeId}
+    </select>
+    <select id="listEnableByType" resultType="com.hss.modules.store.entity.StoreStrategy">
+        select * from STORE_STRATEGY where TYPE = #{type} and IS_ENABLE = '1'
+    </select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.devicetype.mapper.DeviceTypeAlarmStrategyMapper">
+
+    <select id="listCommonByTypeId" resultType="com.hss.modules.scada.model.DeviceTypeStrategyList">
+        select ID, '报警策略' STRATEGY,NAME, TYPE TYPE_NAME  from T_DEVICE_TYPE_ALARM_STRATEGY where TYPE_ID = #{typeId}
+    </select>
+    <select id="listByTypeId" resultType="com.hss.modules.devicetype.entity.DeviceTypeAlarmStrategy">
+        select * from T_DEVICE_TYPE_ALARM_STRATEGY where TYPE_ID = #{typeId}
+    </select>
+    <select id="countStrategyByTypeId" resultType="java.lang.Integer">
+        select count(*) from T_DEVICE_TYPE_ALARM_STRATEGY where TYPE_ID = #{typeId}
+    </select>
+
+    <delete id="deleteByTypeId">
+        delete T_DEVICE_TYPE_ALARM_STRATEGY where TYPE_ID = #{typeId}
+    </delete>
+</mapper>

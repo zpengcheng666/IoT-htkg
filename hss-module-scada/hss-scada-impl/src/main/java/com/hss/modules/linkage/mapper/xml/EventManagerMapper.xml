@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.linkage.mapper.EventManagerMapper">
+
+
+    <select id="list" resultType="com.hss.modules.linkage.entity.EventManager">
+        select * from T_EVENT
+        <where>
+            <if test="name != null and name != ''">
+                and NAME like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

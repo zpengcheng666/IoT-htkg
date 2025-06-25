@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.facility.mapper.DeviceAttrMapper">
+    <select id="queryAttrListByClassId" resultType="com.hss.modules.facility.entity.DeviceAttr">
+        SELECT a.*, if(r.id is not null, 1, 0) as checked
+        FROM DF_BD_DEVICE_ATTR a
+        LEFT JOIN
+            (SELECT * FROM R_DEVCLASS_CLASSATTR WHERE CLASS_ID = #{classId}) AS R
+        ON a.ID = r.ATTR_ID
+        ORDER BY checked DESC
+    </select>
+    <select id="queryAttrsAndValsByDeviceId" resultType="com.hss.modules.facility.entity.DeviceAttr">
+        SELECT a.id, b.ID as DEVICE_ID, a.NAME, a.ATTR_TYPE, a.UNIT, c.ATTR_VAL as VALUE
+        FROM DF_BD_DEVICE_ATTR a
+            LEFT JOIN DF_BI_DEVICE b ON a.DEVICE_ID = b.CLASS_ID
+            LEFT JOIN DF_BI_DEVICE_ATTR c ON c.DEVICE_ID = b.ID AND c.ATTR_ID = a.ID
+        WHERE b.ID = #{deviceId};
+    </select>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.alarm.mapper.AlarmStrategyMapper">
+    <delete id="deleteByDeviceId">
+        delete from ALARM_STRATEGY where DEVICE_ID = #{deviceId}
+    </delete>
+    <select id="listByDeviceId" resultType="com.hss.modules.alarm.entity.AlarmStrategy">
+        select * from ALARM_STRATEGY where DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listByTypeStrategyId" resultType="com.hss.modules.alarm.entity.AlarmStrategy">
+        select * from ALARM_STRATEGY where STRATEGY_ID = #{typeId}
+    </select>
+    <select id="listOutAttrIdByAttrId" resultType="java.lang.String">
+        select STATUS_VAR_ID from ALARM_STRATEGY where EXPRESSION like concat('%', #{attrId}, '%') or CLEAR_EXPRESSION like concat('%', #{attrId}, '%')
+    </select>
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.ShipmentOrderDetailMapper">
+
+    <select id="listByOrderId" resultType="com.hss.modules.spare.model.ReceiptDetailItem">
+        select i.ITEM_NAME, i.ITEM_NO, it.TYPE_NAME as ITEM_TYPE_NAME, d.QUANTITY, d.AREA_ID AS AREA
+        from BP_SHIPMENT_ORDER_DETAIL d
+        inner join BP_ITEM i on d.ITEM_ID = i.ID
+        inner join BP_ITEM_TYPE it on it.ID = i.ITEM_TYPE
+        where d.SHIPMENT_ORDER_ID = #{orderId}
+    </select>
+</mapper>

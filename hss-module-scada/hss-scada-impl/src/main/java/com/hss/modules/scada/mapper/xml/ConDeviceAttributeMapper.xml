@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.scada.mapper.ConDeviceAttributeMapper">
+    <update id="updateRelationById">
+        update CON_SHEBEI_SHUXING set VARIABLE_ID = #{relation.variableId}, VAR_EXPRESSION = #{relation.varExpression} where id = #{relation.id}
+
+    </update>
+    <delete id="deleteByDeviceId">
+        delete CON_SHEBEI_SHUXING where DEVICE_ID = #{deviceId}
+    </delete>
+
+    <select id="listDeviceAttrRelation" resultType="com.hss.modules.scada.model.DeviceAttrRelation">
+        select sc.ID RELATION_ID,sc.NAME SCENE_ATTR_NAME, sc.EN_NAME SCENE_ATTR_EN_NAME, sc.VARIABLE_ID VARIABLE_ID, gw.NAME GATEWAY_ATTR_NAME from CON_SHEBEI_SHUXING sc left join CON_DIANWEI gw on sc.VARIABLE_ID = gw.ID where sc.DEVICE_ID = #{deviceId} and sc.IS_ASSOCIATE = 1 order by sc.SORT_NUMBER
+    </select>
+    <select id="getByVariableId" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where VARIABLE_ID = #{variableId}
+    </select>
+    <select id="listByDeviceId" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where DEVICE_ID = #{deviceId} order by SORT_NUMBER
+    </select>
+    <select id="getByDeviceIdAndAttrEnName" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where DEVICE_ID = #{deviceId} and EN_NAME = #{enName}
+    </select>
+
+    <select id="countBindingByTypeId" resultType="com.hss.modules.scada.model.DeviceAttrCountConfigAndBinding">
+        select count(ID) attrCount, SUM(case when (VARIABLE_ID is not null and LEN(VARIABLE_ID) &gt; 0) or (EXPRESSION is not null and LEN(EXPRESSION) &gt; 0)  then 1 else 0 end ) bindingCount from CON_SHEBEI_SHUXING where IS_ASSOCIATE = 1 and DEVICE_ID = #{deviceId}
+    </select>
+    <select id="countVariableByTypeId" resultType="com.hss.modules.scada.model.DeviceAttrCountConfigAndBinding">
+        select count(ID) attrCount, SUM(case when VAR_EXPRESSION is not null  and LEN(VAR_EXPRESSION) &gt; 0  then 1 else 0 end ) bindingCount from CON_SHEBEI_SHUXING where IS_ASSOCIATE_VAR = 1and DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listDeviceAttrVariable" resultType="com.hss.modules.scada.model.DeviceAttrRelation">
+        select sc.ID RELATION_ID,sc.NAME SCENE_ATTR_NAME, sc.EN_NAME SCENE_ATTR_EN_NAME, sc.VARIABLE_ID VARIABLE_ID, sc.VAR_EXPRESSION VAR_EXPRESSION, gw.NAME GATEWAY_ATTR_NAME from CON_SHEBEI_SHUXING sc left join CON_DIANWEI gw on sc.VARIABLE_ID = gw.ID where sc.IS_ASSOCIATE_VAR = 1 and  sc.DEVICE_ID = #{deviceId} order by sc.SORT_NUMBER
+    </select>
+    <select id="listByPointId" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where VARIABLE_ID = #{variableId} order by SORT_NUMBER
+    </select>
+    <select id="listPoint" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where VARIABLE_ID != '' and  VARIABLE_ID is not null
+    </select>
+    <select id="listStoreAttrByDeviceIds" resultType="com.hss.modules.scada.model.ConSheBeiOptions">
+        select distinct d.ID,D.NAME,d.EN_NAME from CON_SHEBEI_SHUXING d inner join T_DEVICE_TYPE_STORE_STRATEGY t on d.ATTR_ID = t.VARIABLE_ID where d.DEVICE_ID in
+        <foreach collection="deviceIds" item="deviceId" separator="," close=")" open="(">
+            #{deviceId}
+        </foreach>
+    </select>
+    <select id="listAlarmAttrByDeviceIds" resultType="com.hss.modules.scada.model.ConSheBeiOptions">
+        select distinct d.ID,D.NAME,d.EN_NAME from CON_SHEBEI_SHUXING d inner join ALARM_STRATEGY t on d.ID = t.ORIGIN_VAR_ID where d.DEVICE_ID in
+        <foreach collection="deviceIds" item="deviceId" separator="," close=")" open="(">
+            #{deviceId}
+        </foreach>
+    </select>
+    <select id="listByTypeAttrId" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where ATTR_ID = #{typeId}
+    </select>
+    <select id="listIdsByDeviceId" resultType="java.lang.String">
+        select ID from CON_SHEBEI_SHUXING where DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listIdByPointId" resultType="java.lang.String">
+        select ID from CON_SHEBEI_SHUXING where VARIABLE_ID =#{pointId}
+    </select>
+    <select id="listVarRelationAttrIdByAttrId" resultType="java.lang.String">
+        select ID from CON_SHEBEI_SHUXING where VAR_EXPRESSION like concat('%', #{attrId}, '%')
+    </select>
+    <select id="listIdByPointIdWithExpression" resultType="java.lang.String">
+        select ID from CON_SHEBEI_SHUXING where CON_SHEBEI_SHUXING.EXPRESSION like concat('%', #{pointId}, '%')
+    </select>
+    <select id="listByDeviceIdsAndEnName" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select * from CON_SHEBEI_SHUXING where EN_NAME = #{enName}  and DEVICE_ID in
+        <foreach collection="deviceIds" item="deviceId" open="(" close=")" separator=",">
+        #{deviceId}
+        </foreach>
+    </select>
+    <select id="listIdByVarExpressionAttrId" resultType="java.lang.String">
+        select ID from CON_SHEBEI_SHUXING where VAR_EXPRESSION like  concat('%', #{attrId}, '%')
+    </select>
+    <select id="listDeviceIdAttrIdByEnName" resultType="com.hss.modules.scada.model.DeviceIdAndAttrIdEnNameBO">
+        select DEVICE_ID, ID ATTR_ID from CON_SHEBEI_SHUXING where EN_NAME = #{enName}
+    </select>
+    <select id="listIdByEnName" resultType="java.lang.String">
+        select ID from CON_SHEBEI_SHUXING where EN_NAME = #{enName}
+    </select>
+    <select id="listByDeviceIdsAndEnNames" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select ID, DEVICE_ID,EN_NAME  from CON_SHEBEI_SHUXING
+        where DEVICE_ID in <foreach collection="deviceIds" open="(" separator="," item="deviceId" close=")">#{deviceId}</foreach>
+         and EN_NAME in <foreach collection="enNames" open="(" separator="," item="enName" close=")">#{enName}</foreach>
+    </select>
+</mapper>

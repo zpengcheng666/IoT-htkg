@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.ShipmentOrderMapper">
+
+    <select id="page" resultType="com.hss.modules.spare.entity.ShipmentOrderEntity">
+        select * from BP_SHIPMENT_ORDER <where>
+        <if test="dto.orderType != null">ORDER_TYPE = #{dto.orderType}</if>
+        <if test="dto.orderNo != null and dto.orderNo != ''">and ORDER_NO = #{dto.orderNo}</if>
+        <if test="dto.useName != null and dto.useName != ''">and USE_NAME like concat('%', #{dto.useName} , '%')#{dto.supplierId}</if>
+        <if test="dto.dateStart != null">and SHIPMENT_DATE &gt;= #{dto.dateStart}</if>
+        <if test="dto.dateEnd != null">and SHIPMENT_DATE &lt;= #{dto.dateEnd}</if>
+    </where>
+        order by ID desc
+    </select>
+</mapper>

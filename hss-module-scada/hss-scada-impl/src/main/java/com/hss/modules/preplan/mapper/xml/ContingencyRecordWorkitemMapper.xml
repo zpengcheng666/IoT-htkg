@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.preplan.mapper.ContingencyRecordWorkitemMapper">
+
+    <select id="listByStageId" resultType="com.hss.modules.preplan.entity.ContingencyRecordWorkitem">
+        select * from T_CONTINGENCY_RECORD_WORKITEM where STAGE_ID = #{stageId} order by INDEX1
+    </select>
+    <select id="countNotCompletedByStageId" resultType="java.lang.Integer">
+        select count(*) from  T_CONTINGENCY_RECORD_WORKITEM where STAGE_ID = #{stageId} and IS_COMPLETED = 0
+    </select>
+</mapper>

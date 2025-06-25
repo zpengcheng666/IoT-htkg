@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.PublishWeatherTerminalMapper">
+    <delete id="delByMessageId">
+        delete T_WEATHER_R_TERMINAL where WEATHER_ID = #{messageId} and WEATHER_ID is not null;
+    </delete>
+    <delete id="deleteBatchByMessageIds">
+        delete T_WEATHER_R_TERMINAL where WEATHER_ID in
+        <foreach collection="ids" open="(" separator="," item="id" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listTerminalIdByMessageId" resultType="string">
+        select TERMINAL_ID from  T_WEATHER_R_TERMINAL where WEATHER_ID in
+        <foreach collection="messageIds" open="(" separator="," item="messageId" close=")">
+            #{messageId}
+        </foreach>
+    </select>
+
+</mapper>

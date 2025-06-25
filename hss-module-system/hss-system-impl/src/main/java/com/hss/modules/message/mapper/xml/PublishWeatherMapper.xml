@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.PublishWeatherMapper">
+    <resultMap id="listPageMap" type="com.hss.modules.message.entity.PublishWeather">
+        <id column="ID" property="id"/>
+        <result column="WEATHER_TIME" property="weatherTime"/>
+        <result column="CONTENT" property="content"/>
+        <result column="STATE" property="state"/>
+        <result column="MESSAGE_TYPE" property="messageType"/>
+        <collection property="terminalIds" ofType="string">
+            <result column="TERMINAL_ID"/>
+        </collection>
+    </resultMap>
+
+    <select id="getByTerminal" resultType="com.hss.modules.message.entity.PublishWeather">
+        select p.*
+        from T_PUBLISH_WEATHER p
+                     inner join T_WEATHER_R_TERMINAL t on p.ID = t.WEATHER_ID
+        where p.STATE = 2
+          and t.TERMINAL_ID = #{terminalId}
+          order by WEATHER_TIME
+<!--          and WEATHER_TIME = #{now}-->
+    </select>
+    <select id="countByDay" resultType="java.lang.Integer">
+        select count(*)
+        from T_PUBLISH_WEATHER
+        where WEATHER_TIME = #{weatherTime}
+    </select>
+    <select id="getByDateAndState" resultType="java.lang.String">
+        select ID
+        from T_PUBLISH_WEATHER
+        where WEATHER_TIME = #{day}
+          and STATE = #{state}
+    </select>
+    <!--    <select id="queryPage" resultMap="listPageMap">-->
+    <!--        select p.* from T_PUBLISH_WEATHER p inner join T_WEATHER_R_TERMINAL t on p.ID = t.WEATHER_ID where  t.TERMINAL_ID = #{terminalId}-->
+    <!--    </select>-->
+    <select id="queryPage" resultMap="listPageMap">
+        select p.ID, p.WEATHER_TIME, p.CONTENT, p.PUBLISH_TIME, p.STATE, p.MESSAGE_TYPE, t.TERMINAL_ID
+            from T_PUBLISH_WEATHER p
+                     left join T_WEATHER_R_TERMINAL t on p.ID = t.WEATHER_ID
+            where  p.ID IS NOT NULL
+            <if test="terminalIds != null and ! terminalIds.isEmpty() and terminalIds.size() > 0">
+                AND t.TERMINAL_ID in
+                <foreach collection="terminalIds" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+    </select>
+
+    <select id="queryCount" resultType="java.lang.Long">
+        SELECT COUNT(*) as total FROM (select DISTINCT p.ID
+            from T_PUBLISH_WEATHER p
+                     left join T_WEATHER_R_TERMINAL t on p.ID = t.WEATHER_ID
+            where  p.ID IS NOT NULL
+            <if test="terminalIds != null and ! terminalIds.isEmpty() and terminalIds.size() > 0">
+                AND t.TERMINAL_ID in
+                <foreach collection="terminalIds" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+        )
+    </select>
+    <select id="listNotOver" resultType="com.hss.modules.message.entity.PublishWeather">
+        select * from T_PUBLISH_WEATHER where STATE != 3
+    </select>
+</mapper>

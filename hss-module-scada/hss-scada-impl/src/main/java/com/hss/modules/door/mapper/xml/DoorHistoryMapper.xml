@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.door.mapper.DoorHistoryMapper">
+
+    <select id="pageLast" resultType="com.hss.modules.door.entity.DoorHistory">
+        select * from DOOR_HISTORY where DOOR_ID = #{doorId} and DELETED = 0 and ACCESS_TYPE=#{accessType}  order by OPEN_TIME desc
+    </select>
+    <select id="pageList" resultType="com.hss.modules.door.vo.OpenDoorVO">
+        select * from DOOR_HISTORY where DELETED = 0
+        <if test="dto.doorIds != null and dto.doorIds.size > 0">
+            <foreach collection="dto.doorIds" open="and DOOR_ID in (" separator="," close=")" item="doorId">
+                #{doorId}
+            </foreach>
+        </if>
+        <if test="dto.perName != null and dto.perName != ''">
+            and (PER_NAME1 like concat('%' , #{dto.perName}, '%') or PER_NAME2 like concat('%' , #{dto.perName}, '%') or PER_NAME3 like concat('%' , #{dto.perName}, '%') or CHECK_NAME like concat('%' , #{dto.perName}, '%'))
+        </if>
+        <if test="dto.cardCode != null and dto.cardCode != ''">
+            and (CARD_CODE1 like concat('%' , #{dto.cardCode}, '%') or CARD_CODE2 like concat('%' , #{dto.cardCode}, '%') or CARD_CODE3 like concat('%' , #{dto.cardCode}, '%') or CHECK_CODE like concat('%' , #{dto.cardCode}, '%'))
+        </if>
+        <if test="dto.accessType != null and dto.accessType != ''">
+            and ACCESS_TYPE = #{dto.accessType}
+        </if>
+        <if test="dto.accessType != null and dto.accessType != ''">
+            and RECORD_TYPE = #{dto.recordType}
+        </if>
+        <if test="dto.startTime != null and dto.endTime != null">
+            and OPEN_TIME &gt;= #{dto.startTime} and OPEN_TIME &lt;= #{dto.endTime}
+        </if>
+
+        order by  OPEN_TIME desc
+    </select>
+</mapper>

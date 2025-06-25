@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.facility.mapper.DeviceTypeMapper">
+    <!-- 根据设备类型， 按照设备的质量类型进行数量统计 -->
+    <select id="statQualityCondition" resultType="com.hss.modules.facility.model.StatQualityConditionModel">
+        SELECT D.ID, D.NAME, NVL(ST.CNT,0) AS count FROM BASE_DICT_DATA D LEFT JOIN BASE_DICT_TYPE T ON D.DICT_TYPE_ID = T.ID
+            LEFT JOIN
+            (SELECT QUALITY, COUNT(*) AS CNT FROM DF_BI_DEVICE A
+                INNER JOIN (SELECT ID FROM DF_BD_DEVICE  START WITH ID = #{classId} CONNECT BY PRIOR ID = P_ID) AS B ON A.CLASS_ID = B.ID
+                GROUP BY QUALITY
+            ) AS ST ON D.ID = ST.QUALITY
+        WHERE T.EN_NAME = 'quality-condition'
+    </select>
+    <select id="listIdByType" resultType="java.lang.String">
+        WITH  typeF(id)  AS (
+            select ID from DF_BD_DEVICE where ID = #{type}
+            UNION ALL
+            SELECT t.id
+            FROM DF_BD_DEVICE t
+                     INNER JOIN typeF  tp ON t.P_ID = tp.id
+        )
+        SELECT * FROM typeF;
+    </select>
+</mapper>

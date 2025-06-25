@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.PublishSatelliteSecureMapper">
+
+    <select id="getPage" resultType="com.hss.modules.message.model.PublishSatelliteSecureVO">
+        select * from T_PUBLISH_SATELLITE_SECURE order by ID desc
+    </select>
+    <select id="getPageByTerminal" resultType="com.hss.modules.message.model.PublishSatelliteSecureVO">
+        select s.* from T_PUBLISH_SATELLITE_SECURE s inner join T_SECURE_TERMINAL r on s.ID = r.MSG_ID
+        where r.TERMINAL_ID in <foreach collection="terminalIds" open="(" close=")" item="terminalId" separator=",">#{terminalId}</foreach> order by s.ID desc
+    </select>
+    <select id="listNoOver" resultType="com.hss.modules.message.entity.PublishSatelliteSecure">
+        select * from T_PUBLISH_SATELLITE_SECURE where STATE != 3
+    </select>
+    <select id="listPublishByTerminalId" resultType="com.hss.modules.message.entity.PublishSatelliteSecure">
+        select s.* from T_PUBLISH_SATELLITE_SECURE s inner join T_SECURE_TERMINAL r on s.ID = r.MSG_ID
+        where r.TERMINAL_ID = #{terminalId} and (s.STATE = 1 or s.STATE = 2)
+    </select>
+</mapper>

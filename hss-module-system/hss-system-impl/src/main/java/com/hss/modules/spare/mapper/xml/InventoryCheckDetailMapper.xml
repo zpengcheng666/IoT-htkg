@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.InventoryCheckDetailMapper">
+
+    <select id="listByOrderId" resultType="com.hss.modules.spare.model.CheckDetailItem">
+        select it.ITEM_NAME, it.ITEM_NO, ip.TYPE_NAME as ITEM_TYPE_NAME, c.QUANTITY, c.CHECK_QUANTITY, c.REMARK, c.AREA_ID as AREA
+        from HSS.BP_INVENTORY_CHECK_DETAIL c inner join HSS.BP_ITEM it on c.ITEM_ID = it.ID inner join BP_ITEM_TYPE ip on ip.ID = it.ITEM_TYPE
+        WHERE c.CHECK_ID = #{orderId}
+    </select>
+</mapper>

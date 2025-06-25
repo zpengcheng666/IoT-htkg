@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.scada.mapper.GsChangJingMapper">
+
+    <select id="listDeviceIdPublishChangJing" resultType="java.lang.String">
+        select rsb.DEVICE_ID from GS_CHANGJING cj inner join GS_CHANGJING_SHEBEI rsb on cj.id = rsb.SCENE_ID
+    </select>
+    <select id="listIdsByPublish" resultType="java.lang.String">
+        select ID from GS_CHANGJING where IS_PUBLISHED = '1'
+    </select>
+    <select id="listDeviceIdBySubSystemId" resultType="java.lang.String">
+        select r.DEVICE_ID from GS_CHANGJING s inner join GS_CHANGJING_SHEBEI r on s.id = r.SCENE_ID
+        <where>
+            <if test="subSystemId != null and subSystemId != ''">
+                s.SUB_SYSTEM = #{subSystemId}
+            </if>
+        </where>
+        group by r.DEVICE_ID
+    </select>
+    <select id="listNameAndSystemByDeviceId" resultType="com.hss.modules.scada.entity.GsChangJing">
+        select s.id, s.description, s.name, s.sub_module, s.sub_system
+        from GS_CHANGJING s inner join GS_CHANGJING_SHEBEI r on s.ID = r.SCENE_ID
+        where r.DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listMenu" resultType="com.hss.modules.scada.entity.GsChangJing">
+        select ID, NAME, SUB_SYSTEM from GS_CHANGJING where IS_PUBLISHED = 1
+        <if test="subSystem != null and subSystem != ''">
+            and SUB_SYSTEM = #{subSystem}
+        </if>
+    </select>
+</mapper>

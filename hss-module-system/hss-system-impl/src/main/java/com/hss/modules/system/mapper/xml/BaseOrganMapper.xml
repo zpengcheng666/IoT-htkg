@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.system.mapper.BaseOrganMapper">
+    <!--根据pid查询下级组织结构-->
+    <select id="queryTreeListByPid" parameterType="Object"  resultType="com.hss.modules.system.entity.BaseOrgan">
+        SELECT * FROM BASE_ORGANIZATION where deleted = '0'
+        <choose>
+            <when test="pid != null and pid != ''">
+                AND pid =  #{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                AND pid is null or pid=''
+            </otherwise>
+        </choose>
+        order by order_num
+    </select>
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.door.mapper.DoorPersonCardMapper">
+
+    <select id="listId" resultType="java.lang.String">
+        select ID from DOOR_PERSON_CARD
+    </select>
+    <select id="listByCardByPersonId" resultType="com.hss.modules.door.entity.DoorPersonCard">
+        select * from DOOR_PERSON_CARD where PERSON_ID = #{personId}
+    </select>
+</mapper>

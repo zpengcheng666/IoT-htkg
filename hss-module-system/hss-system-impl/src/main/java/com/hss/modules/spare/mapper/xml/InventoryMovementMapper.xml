@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.InventoryMovementMapper">
+
+    <select id="page" resultType="com.hss.modules.spare.entity.InventoryMovementEntity">
+        select * from BP_INVENTORY_MOVEMENT <where>
+        <if test="dto.orderNo != null and dto.orderNo != ''">ORDER_NO = #{dto.orderNo}</if>
+        <if test="dto.useName != null and dto.useName != ''">and USE_NAME like concat('%', #{dto.useName} , '%')</if>
+        <if test="dto.dateStart != null">and SHIPMENT_DATE &gt;= #{dto.dateStart}</if>
+        <if test="dto.dateEnd != null">and SHIPMENT_DATE &lt;= #{dto.dateEnd}</if>
+    </where>
+        order by ID desc
+    </select>
+</mapper>

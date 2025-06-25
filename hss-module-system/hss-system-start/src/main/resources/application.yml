@@ -1,0 +1,150 @@
+spring:
+  application:
+    name: hss-system
+  main:
+    allow-circular-references: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  profiles:
+    active: 'mysql'
+server:
+  port: 8081
+  tomcat:
+    max-swallow-size: -1
+  error:
+    include-exception: true
+    include-stacktrace: ALWAYS
+    include-message: ALWAYS
+  servlet:
+    context-path: /hss-boot
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
+
+#Mybatis输出sql日志
+logging:
+  level:
+    org.hss.modules.system.mapper: info
+
+mybatis-plus:
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: flag # 全局逻辑删除的实体字段名(deleted 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+mqtt:
+  client:
+    username: admin
+    password: admin
+    serverURI: tcp://192.168.206.128:18083
+    clientId: paho_${random.int[1000,9999]}
+    keepAliveInterval: 120
+    connectionTimeout: 30
+  producer:
+    defaultQos: 1
+    defaultRetained: true
+    defaultTopic: topic/test11
+  consumer:
+    consumerTopics: v1/gateway/telemetry/msgsend
+#swagger
+knife4j:
+  #开启增强配置
+  enable: true
+  #开启生产环境屏蔽
+  production: false
+  basic:
+    enable: false
+    username: jeecg
+    password: jeecg1314
+scada:
+  # 摄像头设备类型列表
+  cameraTypeList:
+    - 鱼眼
+    - 网络枪机
+    - 云台
+    - 球型
+    - 森林防火
+    - 防爆球型
+    - 防爆云台
+    - 防爆枪机
+    - 半球
+  # 广播设备类型列表
+  publishTypeList:
+    - 寻呼话筒
+    - 对讲终端
+  site: 1
+  door:
+    # 远程开门属性
+    remoteOpen: remoteOpenCtrl
+    # 进门卡号属性
+    doorInCard: entryCard
+    # 出门卡号属性
+    doorOutCard: exitCard
+    # 进门结果属性
+    doorEntryResult: entryResult
+    # 出门结果属性
+    doorExitResult: exitResult
+  subSystem:
+    - id: menjin
+      name: 门禁安检子系统
+      subModules:
+        - id: menjin
+          name: 门禁实时监控
+    - id: yinshipin
+      name: 音视频监控子系统
+      subModules:
+        - id: yinshipin
+          name: 音视频实时监控
+    - id: huozai
+      name: 火灾报警子系统
+      subModules:
+        - id: huozai
+          name: 火灾报警实时监控
+    - id: zhoujie
+      name: 周边警戒子系统
+      subModules:
+        - id: zhoujie
+          name: 周边警戒实时监控
+    - id: huanjing
+      name: 环境监控子系统
+      subModules:
+        - id: huanjing
+          name: 环境实时监控
+    - id: dianli
+      name: 电力监控子系统
+      subModules:
+        - id: dianli
+          name: 电力实时监控
+    - id: geipaishui
+      name: 给排水监控子系统
+      subModules:
+        - id: geipaishui
+          name: 给排水实时监控
+    - id: guangbo
+      name: 智能广播子系统
+      subModules:
+        - id: guangbo
+          name: 智能广播实时监控
+
+info:
+  head: head
+  body: body
+management:
+  endpoints:
+    web:
+      exposure:
+        # 加载所有的端点，默认只加载了info、health
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    # 可以关闭指定的端点
+    shutdown:
+      enabled: false
+

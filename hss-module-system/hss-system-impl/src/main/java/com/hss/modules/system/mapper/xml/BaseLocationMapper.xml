@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.system.mapper.BaseLocationMapper">
+    <!--根据pid查询下级存储位置信息-->
+    <select id="queryTreeListByPid" parameterType="Object"  resultType="com.hss.modules.system.entity.BaseLocation">
+        SELECT * FROM BASE_LOCATION where deleted = '0'
+        <choose>
+            <when test="pid != null and pid != ''">
+                AND pid =  #{pid,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                AND pid is null or pid=''
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.system.mapper.StatisticsSectionMapper">
+    <!--根据设备属性id查询列表，如果id空查所有，如果不为空，按照属性id查-->
+    <select id="queryDevAttrId" resultType="com.hss.modules.system.entity.StatisticsSection">
+        select t.*
+        from STATISTICS_SECTION t
+        <where>
+            <if test="devAttrId != null and devAttrId != ''">
+                t.attr_en_name in
+                (select k.CATEGORY
+                 from T_DEVICE_TYPE_ATTRIBUTE k
+                 where k.id = #{devAttrId})
+            </if>
+        </where>
+    </select>
+    <select id="listByDeviceTypeIdAndEnName" resultType="com.hss.modules.system.entity.StatisticsSection">
+        select * from STATISTICS_SECTION where DEV_CLASSID = #{deviceTypeId} and ATTR_EN_NAME = #{enName}
+    </select>
+    <insert id="insertAll">
+        INSERT INTO STATISTICS_SECTION a
+                (a.ID,
+                 a.ATTR_EN_NAME,
+                 a.ATTR_NAME,
+                 a.ORDER_NUM,
+                 a.SECTION_CALCULATION,
+                 a.SECTION_DISPLAY,
+                 a.DEV_CLASSID,
+                 a.DEV_ATTRID)
+            VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},
+             #{item.attrEnName},
+             #{item.attrName},
+             #{item.orderNum},
+             #{item.sectionCalculation},
+             #{item.sectionDisplay},
+             #{item.devClassid},
+             #{item.devAttrid})
+        </foreach>
+    </insert>
+</mapper>

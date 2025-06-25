@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.preplan.mapper.ContingencyPlanWorkitemMapper">
+
+    <select id="listByStageId" resultType="com.hss.modules.preplan.entity.ContingencyPlanWorkitem">
+        select * from T_CONTINGENCY_PLAN_WORKITEM where STAGE_ID = #{stageId} order by INDEX1 asc
+    </select>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.scada.mapper.DeviceExecuteLogMapper">
+
+    <select id="listExcel" resultType="com.hss.modules.scada.entity.DeviceExecuteLog">
+        select a.DEVICE_NAME, a.NAME attrName, l.EXECUTE_TIME, l.EXECUTE_RESULT from CON_DEVICE_EXECUTE_LOG l inner join CON_SHEBEI_SHUXING a on l.ATTR_ID = a.ID
+        <where>
+            <if test="entity.deviceId != null and entity.deviceId != ''"> l.DEVICE_ID = #{entity.deviceId}</if>
+            <if test="entity.attrId != null and entity.attrId != ''">and l.DEVICE_ID = #{entity.attrId}</if>
+        </where>
+        order by EXECUTE_TIME desc
+    </select>
+</mapper>

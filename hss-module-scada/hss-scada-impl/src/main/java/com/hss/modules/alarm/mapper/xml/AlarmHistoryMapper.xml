@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.alarm.mapper.AlarmHistoryMapper">
+    <update id="handler">
+        update ALARM_HISTORY set HANDLE_TIME = #{date}, HANDLER = #{dto.handler}, HANDLE_METHOD = #{dto.handleMethod}, IS_Handle = '1' where ID in
+       <foreach collection="dto.ids" open="(" item="id" separator="," close=")">
+         #{id}
+       </foreach>
+    </update>
+    <select id="statByDayAndCnt" resultType="java.util.Map">
+    SELECT DEVICE_TYPE, DEVICE_ID, DEVICE_NAME, ATTR_NAME, DATE_FORMAT(CREATED_TIME, 'yyyy-MM-dd') AS CREATED_TIME, COUNT(*) AS CNT
+    FROM
+        ALARM_HISTORY WHERE ID IS NOT NULL
+        <if test="deviceType != null">
+            AND DEVICE_TYPE = #{deviceType}
+        </if>
+        <if test="deviceId != null">
+            AND DEVICE_ID = #{deviceId}
+        </if>
+        <if test="deviceId != null">
+            AND DEVICE_ID = #{deviceId}
+        </if>
+        <if test="attrName != null">
+            AND ATTR_NAME = #{attrName}
+        </if>
+        <if test="startTime != null">
+            AND CREATED_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND CREATED_TIME &lt;= #{endTime}
+        </if>
+    GROUP BY
+        DEVICE_TYPE, DEVICE_ID, DEVICE_NAME, ATTR_NAME, DATE_FORMAT(CREATED_TIME, 'yyyy-MM-dd');
+    </select>
+    <select id="statByHourAndCnt" resultType="java.util.Map">
+        SELECT DEVICE_TYPE, DEVICE_ID, DEVICE_NAME, ATTR_NAME, DATE_FORMAT(CREATED_TIME, 'yyyy-MM-dd HH24') AS CREATED_TIME, COUNT(*) AS CNT
+        FROM
+        ALARM_HISTORY WHERE ID IS NOT NULL
+        <if test="deviceType != null">
+            AND DEVICE_TYPE = #{deviceType}
+        </if>
+        <if test="deviceId != null">
+            AND DEVICE_ID = #{deviceId}
+        </if>
+        <if test="deviceId != null">
+            AND DEVICE_ID = #{deviceId}
+        </if>
+        <if test="attrName != null">
+            AND ATTR_NAME = #{attrName}
+        </if>
+        <if test="startTime != null">
+            AND CREATED_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND CREATED_TIME &lt;= #{endTime}
+        </if>
+        GROUP BY
+        DEVICE_TYPE, DEVICE_ID, DEVICE_NAME, ATTR_NAME, DATE_FORMAT(CREATED_TIME, 'yyyy-MM-dd HH24');
+    </select>
+    <select id="statisticsAlarmHistories" resultType="com.hss.modules.alarm.entity.AlarmHistory">
+        select
+        <choose>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='day'">
+                to_char(ALARM_START_TIME,'yyyy-MM-DD') AS statisticsCycle,
+            </when>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='month'">
+                to_char(ALARM_START_TIME,'yyyy-MM')AS statisticsCycle,
+            </when>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='year'">
+                to_char(ALARM_START_TIME,'yyyy')AS statisticsCycle,
+            </when>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='quarter'">
+                to_char(ALARM_START_TIME,'yyyy-Q')AS statisticsCycle,
+            </when>
+        </choose>
+        <choose>
+            <when test=" statisticsResult != null and  statisticsResult !=''and  statisticsResult=='total'">
+                count(1)as total
+            </when>
+            <when test=" statisticsResult != null and  statisticsResult !=''and  statisticsResult=='duration'">
+                SUM (ALARM_DURATION) AS alarmDuration
+            </when>
+        </choose>
+        <choose>
+            <when test=" statisticsWay != null and  statisticsWay !=''and  statisticsWay=='alarmLevel'">
+                ,LEVEL_ID as levelId
+            </when>
+            <when test=" statisticsWay != null and  statisticsWay !=''and  statisticsWay=='alarmType'">
+                ,ALARM_TYPE_ID as alarmTypeId
+            </when>
+        </choose>
+        from
+        ALARM_HISTORY
+        <where>
+            <if test="subsystem != null and subsystem !=''">
+                and  SUBSYSTEM = #{subsystem,jdbcType=NVARCHAR}
+            </if>
+            <if test="deviceId != null and deviceId.size()>0">
+                and DEVICE_ID in
+                <foreach collection = "deviceId" item = "item" open="(" close =")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="attrEnName != null and attrEnName.size()>0 ">
+                and ATTR_EN_NAME in
+                <foreach collection = "attrEnName" item = "items" open="(" close =")" separator=",">
+                    #{items}
+                </foreach>
+            </if>
+            <if test="deviceType != null and deviceType.size()>0 ">
+                and DEVICE_TYPE in
+                <foreach collection = "deviceType" item = "items" open="(" close =")" separator=",">
+                    #{items}
+                </foreach>
+            </if>
+            <if test="startTime != null ">
+                and ALARM_START_TIME &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+            </if>
+            <if test="endTime != null">
+                and ALARM_START_TIME &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+            </if>
+        </where>
+        <choose>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='day'">
+                GROUP by to_char(ALARM_START_TIME,'yyyy-MM-DD')
+            </when>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='month'">
+                GROUP by to_char(ALARM_START_TIME,'yyyy-MM')
+            </when>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='year'">
+                GROUP by to_char(ALARM_START_TIME,'yyyy')
+            </when>
+            <when test="statisticsMethod != null and statisticsMethod !=''and statisticsMethod=='quarter'">
+                GROUP by to_char(ALARM_START_TIME,'yyyy-Q')
+            </when>
+        </choose>
+        <choose>
+            <when test=" statisticsWay != null and  statisticsWay !=''and  statisticsWay=='alarmLevel'">
+                ,LEVEL_ID
+            </when>
+            <when test=" statisticsWay != null and  statisticsWay !=''and  statisticsWay=='alarmType'">
+                ,ALARM_TYPE_ID
+            </when>
+        </choose>
+        ORDER BY TO_DATE(statisticsCycle, 'YYYY-MM-DD HH:MI:SS')
+    </select>
+    <select id="getByAlarmDataId" resultType="com.hss.modules.alarm.entity.AlarmHistory">
+        select * from ALARM_HISTORY where ALARM_DATA_ID = #{alarmDataId}
+    </select>
+
+
+    <sql id="getValueName">
+        <if test="model.statisticsMethod=='day'">
+            to_char(ALARM_START_TIME,'yyyy-MM-DD')
+        </if>
+        <if test="model.statisticsMethod=='month'">
+            to_char(ALARM_START_TIME,'yyyy-MM')
+        </if>
+        <if test="model.statisticsMethod=='year'">
+            to_char(ALARM_START_TIME,'yyyy')
+        </if>
+        <if test="model.statisticsMethod=='quarter'">
+            to_char(ALARM_START_TIME,'yyyy-Q')
+        </if>
+
+    </sql>
+    <sql id="getValue">
+        <if test="model.statisticsResult == 'total'">
+            count(*)
+        </if>
+        <if test="model.statisticsResult == 'duration'">
+            CEIL(SUM (ALARM_DURATION) / 1000000)
+        </if>
+    </sql>
+    <sql id="getGroupName">
+        <if test="model.statisticsWay=='alarmLevel'">
+            LEVEL_ID
+        </if>
+        <if test="model.statisticsWay=='alarmType'">
+            ALARM_TYPE_ID
+        </if>
+    </sql>
+    <sql id="statisticsWhere">
+        <where>
+            <if test="model.subsystem != null and model.subsystem !=''">
+                and  SUBSYSTEM = #{model.subsystem}
+            </if>
+            <if test="model.deviceId != null and model.deviceId.size()>0">
+                and DEVICE_ID in
+                <foreach collection = "model.deviceId" item = "item" open="(" close =")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="model.attrId != null and model.attrId.size()>0 ">
+                and VARIABLE_ID in
+                <foreach collection = "model.attrId" item = "items" open="(" close =")" separator=",">
+                    #{items}
+                </foreach>
+            </if>
+            <if test="model.deviceType != null and model.deviceType.size()>0 ">
+                and DEVICE_TYPE in
+                <foreach collection = "model.deviceType" item = "items" open="(" close =")" separator=",">
+                    #{items}
+                </foreach>
+            </if>
+            <if test="model.startTime != null ">
+                and ALARM_START_TIME &gt;= #{model.startTime}
+            </if>
+            <if test="model.endTime != null">
+                and ALARM_START_TIME &lt; #{model.endTime}
+            </if>
+            <if test="model.statisticsWay=='alarmType'">
+                and ALARM_TYPE_ID is not null
+            </if>
+            <if test="model.statisticsResult == 'duration'">
+                and ALARM_DURATION is not null
+            </if>
+        </where>
+    </sql>
+    <select id="statistics" resultType="com.hss.modules.alarm.model.AlarmStatisticsBO">
+        select <include refid="getValueName"/> AS valueName,<include refid="getValue"/> as value,<include refid="getGroupName"/> as groupName from ALARM_HISTORY
+        <include refid="statisticsWhere"/> group by <include refid="getValueName"/>, <include refid="getGroupName"/>
+    </select>
+    <select id="getBadSumTime" resultType="java.lang.Long">
+        select sum(ALARM_DURATION)  from ALARM_HISTORY
+        where  ALARM_DURATION is not null
+        and VARIABLE_ID = #{dto.attrId}
+        and ALARM_START_TIME &gt;= #{dto.startTime}
+        and ALARM_END_TIME &lt;= #{dto.endTime}
+    </select>
+    <select id="stateCountLastMonth" resultType="com.hss.modules.alarm.model.StateCountLastMonthBO">
+        select count(*) count, DATE_FORMAT(ALARM_START_TIME,'MM-dd') day from ALARM_HISTORY where ALARM_START_TIME >= #{upMonth} group by DATE_FORMAT(ALARM_START_TIME,'MM-dd')
+    </select>
+    <select id="stateCountAlarm" resultType="com.hss.modules.alarm.model.StateCountLastMonthBO">
+        select count(*) count, DATE_FORMAT(ALARM_START_TIME,'MM-dd') day from ALARM_HISTORY
+         where ALARM_START_TIME >= #{upMonthDate} and SUBSYSTEM = #{subSystems}
+        group by DATE_FORMAT(ALARM_START_TIME,'MM-dd')
+    </select>
+    <select id="listByAlarmDataIds" resultType="com.hss.modules.alarm.entity.AlarmHistory">
+        select * from ALARM_HISTORY where ALARM_DATA_ID in
+        <foreach collection="alarmDataIds" open="(" item="alarmDataId" separator="," close=")">#{alarmDataId}</foreach>
+    </select>
+
+</mapper>

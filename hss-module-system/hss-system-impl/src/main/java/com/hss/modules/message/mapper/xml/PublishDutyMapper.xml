@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.PublishDutyMapper">
+
+    <update id="publish">
+        update T_PUBLISH_DUTY set STATE = 2,PUBLISH_TIME = #{now} where ID = #{id}
+    </update>
+    <select id="listByTerminal" resultType="com.hss.modules.message.entity.PublishDuty">
+        select p.* from T_PUBLISH_DUTY p inner join T_DUTY_R_TERMINAL t on p.ID = t.DUTY_ID where p.STATE = 2 and t.TERMINAL_ID = #{terminalId}
+    </select>
+    <select id="queryPage" resultType="com.hss.modules.message.entity.PublishDuty">
+<!--        select p.* from T_PUBLISH_DUTY p inner join T_DUTY_R_TERMINAL r on p.ID = r.DUTY_ID-->
+<!--            where r.TERMINAL_ID in-->
+<!--             <foreach collection="terminalIds" open="(" separator="," close=")" item="item">-->
+<!--                    #{item}-->
+<!--             </foreach>-->
+        select p.*
+          from T_PUBLISH_DUTY p
+         WHERE p.ID in
+               (select DISTINCT a.DUTY_ID
+                  from T_DUTY_R_TERMINAL a
+                 WHERE a.TERMINAL_ID in
+                 <foreach collection="terminalIds" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+                 )
+    </select>
+</mapper>

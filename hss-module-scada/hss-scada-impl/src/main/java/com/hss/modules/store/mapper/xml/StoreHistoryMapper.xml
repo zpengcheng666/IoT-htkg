@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.store.mapper.StoreHistoryMapper">
+
+    <select id="selectHistoryPage" resultType="com.hss.modules.store.entity.StoreHistory">
+        SELECT his.*
+        FROM STORE_HISTORY his
+                 <if test="subSystem != null and subSystem != ''">
+                     LEFT JOIN GS_CHANGJING_SHEBEI t ON t.device_id = his.device_id
+                     LEFT JOIN GS_CHANGJING s ON t.SCENE_ID = s.ID
+                 </if>
+        <where>
+            <if test="subSystem != null and subSystem != ''">
+                s.sub_system = #{subSystem}
+            </if>
+            <if test="startTime != null">
+                AND his.record_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND his.record_time &lt;= #{endTime}
+            </if>
+            <if test="deviceIds != null">
+                AND his.device_id in
+                <foreach collection="deviceIds" open="(" separator="," close=")" item="item" index="index">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="deviceTypes != null">
+                AND his.device_type in
+                <foreach collection="deviceTypes" open="(" separator="," close=")" item="item" index="index">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="attrIds != null and attrIds != ''">
+                AND his.attr_id in
+                <foreach collection="attrIds" open="(" separator="," close=")" item="item" index="index">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+
+    <select id="maxAndMin" resultType="com.hss.modules.store.model.bo.MaxAndMinBO">
+        select min(RECORD_VALUE) as min, max(RECORD_VALUE) as max from STORE_HISTORY
+        <where>
+            <if test="dto.deviceType != null and dto.deviceType != '' "> DEVICE_TYPE = #{dto.deviceType} </if>
+            <if test="dto.deviceId != null and dto.deviceId != '' "> and DEVICE_ID = #{dto.deviceId} </if>
+            <if test="dto.attrName != null and dto.attrName != '' "> and ATTR_NAME = #{dto.attrName} </if>
+            <if test="dto.startTime != null "> and RECORD_TIME &gt;= #{dto.startTime} </if>
+            <if test="dto.endTime != null "> and RECORD_TIME &lt;= #dto{dto.endTime} </if>
+
+        </where>
+    </select>
+    <select id="countByStartAndEnd" resultType="java.lang.Integer">
+        select count(*) from STORE_HISTORY  where ATTR_ID = #{dto.attrId} and RECORD_VALUE &gt;= #{start} and RECORD_VALUE &lt; #{end} and RECORD_TIME &gt;= #{dto.startTime} and RECORD_TIME &lt;= #{dto.endTime}
+    </select>
+    <select id="getValueByVariableId" resultType="java.lang.String">
+        select TOP 1 RECORD_VALUE from STORE_HISTORY where VARIABLE_ID = #{variableId} order by RECORD_TIME desc
+    </select>
+
+    <select id="stat" resultType="com.hss.modules.store.model.StoreHistoryStatWrapper">
+        SELECT ATTR_NAME, ATTR_EN_NAME, DATE_FORMAT(RECORD_TIME, 'yyyy-MM-dd') AS RECORD_TIME, COUNT(*) AS CNT
+        FROM
+        STORE_HISTORY WHERE ID IS NOT NULL AND RECORD_TIME IS NOT NULL AND ATTR_EN_NAME IS NOT NULL
+        <if test="deviceType != null and deviceType!=''">
+            AND DEVICE_TYPE = #{deviceType}
+        </if>
+        <if test="deviceId != null and deviceId!=''">
+            AND DEVICE_ID = #{deviceId}
+        </if>
+        <if test="attrName != null and attrName!=''">
+            AND ATTR_NAME = #{attrName}
+        </if>
+        <if test="startTime != null">
+            AND RECORD_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND RECORD_TIME &lt;= #{endTime}
+        </if>
+        <if test="subSystem != null and subSystem!=''">
+            AND SUBSYSTEM = #{subSystem}
+        </if>
+        GROUP BY
+        ATTR_NAME, ATTR_EN_NAME,  DATE_FORMAT(RECORD_TIME, 'yyyy-MM-dd')
+        ORDER BY RECORD_TIME ASC
+    </select>
+    <select id="historyLineStatistics" resultType="com.hss.modules.store.entity.StoreHistory">
+        select top 1000 ATTR_ID,DEVICE_NAME,ATTR_NAME, RECORD_VALUE, RECORD_TIME from STORE_HISTORY where ATTR_ID in
+        <foreach collection="dto.attrIds" open="(" close=")" separator="," item="attrId">
+            #{attrId}
+        </foreach>
+        and RECORD_TIME &gt;= #{dto.startTime} and RECORD_TIME &lt;= #{dto.endTime} order by RECORD_TIME
+    </select>
+
+    <select id="envHourReport" resultType="com.hss.modules.store.model.EnvReportDTO">
+        SELECT TO_CHAR(RECORD_TIME, 'HH24') AS RECORD_TIME, ATTR_NAME , MAX(RECORD_VALUE) AS MAX, MIN(RECORD_VALUE) AS MIN, AVG(RECORD_VALUE) AS AVG
+        FROM STORE_HISTORY
+        WHERE
+            DEVICE_TYPE = #{deviceType}
+            AND DEVICE_ID = #{deviceId}
+            AND RECORD_TIME &gt;= #{startTime}
+            AND RECORD_TIME &lt;= #{endTime}
+        GROUP BY TO_CHAR(RECORD_TIME, 'HH24'), ATTR_NAME
+    </select>
+
+    <select id="envDayReport" resultType="com.hss.modules.store.model.EnvReportDTO">
+        SELECT TO_CHAR(RECORD_TIME, 'YYYY-MM-DD') AS RECORD_TIME, ATTR_NAME , MAX(RECORD_VALUE) AS MAX, MIN(RECORD_VALUE) AS MIN, AVG(RECORD_VALUE) AS AVG
+        FROM STORE_HISTORY
+        WHERE
+        DEVICE_TYPE = #{deviceType}
+        AND DEVICE_ID = #{deviceId}
+        AND RECORD_TIME &gt;= #{startTime}
+        AND RECORD_TIME &lt;= #{endTime}
+        GROUP BY TO_CHAR(RECORD_TIME, 'YYYY-MM-DD'), ATTR_NAME
+    </select>
+
+</mapper>

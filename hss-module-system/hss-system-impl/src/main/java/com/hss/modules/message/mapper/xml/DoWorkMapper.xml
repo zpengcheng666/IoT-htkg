@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.DoWorkMapper">
+
+    <select id="pageList" resultType="com.hss.modules.message.dto.DoWorkPageVO">
+        select w.* from t_do_work  w
+            <if test="dto.terminalIds != null and dto.terminalIds.size > 0">inner join  T_DO_WORK_TERMINAL r on w.id = r.DO_WORK_ID </if>
+            <where>
+                <if test="dto.workName != null and dto.workName != ''">WORK_NAME like concat('%', #{dto.workName}, '%')</if>
+                <if test="dto.workDate != null"> and WORK_DAY = #{dto.workDate}</if>
+                <if test="dto.terminalIds != null and dto.terminalIds.size > 0">and TERMINAL_ID
+                <foreach collection="dto.terminalIds" item="id" separator="," open="in (" close=")">
+                #{id}
+                </foreach>
+                </if>
+            </where>
+        order by w.ID desc
+    </select>
+    <select id="listOut" resultType="com.hss.modules.message.entity.DoWork">
+        select ID from t_do_work where WORK_END_DAY &lt; #{from} and STATE != 3
+    </select>
+    <select id="listShowWorkByTerminalId" resultType="com.hss.modules.message.entity.DoWork">
+        select w.* from t_do_work w inner join T_DO_WORK_TERMINAL r on w.ID = r.DO_WORK_ID where r.TERMINAL_ID = #{terminalId} and (w.STATE = 1 or w.STATE =2)
+    </select>
+    <select id="lisExcel" resultType="com.hss.modules.message.entity.DoWork">
+        select * from t_do_work
+        <where>
+            <if test="dto.workName != null and dto.workName != ''">WORK_NAME like concat('%', #{dto.workName}, '%')</if>
+            <if test="dto.workDate != null"> and WORK_DAY = #{dto.workDate}</if>
+        </where>
+        order by ID desc
+    </select>
+</mapper>

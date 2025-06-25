@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.DoWorkTerminalMapper">
+    <delete id="delByMessageId">
+        delete T_DO_WORK_TERMINAL  where DO_WORK_ID = #{messageId}
+    </delete>
+
+    <select id="listTerminalIdsByDoWorkId" resultType="java.lang.String">
+        select TERMINAL_ID from T_DO_WORK_TERMINAL where DO_WORK_ID = #{doWorkId}
+    </select>
+</mapper>

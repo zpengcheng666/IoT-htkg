@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.message.mapper.DutyGroupMapper">
+
+<!--    <select id="page" resultType="com.hss.modules.message.entity.DutyGroup">-->
+<!--        select * from BASE_DUTY_GROUP where DUTY_ID = #{dutyId}-->
+<!--         <if test="name != null and name != ''"> and NAME like concat('%', #{name}, '%')</if>  order by CODE-->
+<!--    </select>-->
+    <select id="listByDutyId" resultType="com.hss.modules.message.entity.DutyGroup">
+        select * from BASE_DUTY_GROUP where DUTY_ID = #{dutyId} order by CODE
+    </select>
+    <select id="countByDutyIdAndCode" resultType="java.lang.Integer">
+        select count(*) from BASE_DUTY_GROUP where DUTY_ID= #{dutyId} and CODE = #{code}
+    </select>
+</mapper>

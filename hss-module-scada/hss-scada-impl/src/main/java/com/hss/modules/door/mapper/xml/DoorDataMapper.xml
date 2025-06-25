@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.door.mapper.DoorDataMapper">
+
+    <select id="pageTerminalByDoorId" resultType="com.hss.modules.door.entity.DoorData">
+        select * from DOOR_DATA where DOOR_ID = #{doorId} and OPEN_TYPE != 'ba30903ff2d39df1102d28be5e69c747'
+        <if test="startTime != null">
+            and SWIPE_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and SWIPE_TIME &lt;= #{endTime}
+        </if>
+        order by  SWIPE_TIME desc
+    </select>
+    <select id="pageByRemoteOpen" resultType="com.hss.modules.door.vo.RemoteOpenDoorVO">
+        select * from DOOR_DATA where OPEN_TYPE = 'RemoteOpen'
+        <if test="dto.doorIds != null and dto.doorIds.size > 0">
+            <foreach collection="dto.doorIds" open="and DOOR_ID in (" separator="," close=")" item="doorId">
+                #{doorId}
+            </foreach>
+        </if>
+        <if test="dto.perName != null and dto.perName != ''">
+            and PER_NAME like concat('%' , #{dto.perName}, '%')
+        </if>
+        <if test="dto.startTime != null and dto.endTime != null">
+            and SWIPE_TIME &gt;= #{dto.startTime} and SWIPE_TIME &lt;= #{dto.endTime}
+        </if>
+        order by  SWIPE_TIME desc
+    </select>
+    <select id="pageByCard" resultType="com.hss.modules.door.vo.CardDoorVO">
+        select * from DOOR_DATA where OPEN_TYPE like concat('Card' , '%')
+        <if test="dto.doorIds != null and dto.doorIds.size > 0">
+            <foreach collection="dto.doorIds" open="and DOOR_ID in (" separator="," close=")" item="doorId">
+                #{doorId}
+            </foreach>
+        </if>
+        <if test="dto.accessTypes != null and dto.accessTypes.size> 0">
+            <foreach collection="dto.accessTypes" open="and ACCESS_TYPE in (" separator="," close=")" item="accessType">
+                #{accessType}
+            </foreach>
+        </if>
+        <if test="dto.perName != null and dto.perName != ''">
+            and PER_NAME like concat('%' , #{dto.perName}, '%')
+        </if>
+        <if test="dto.cardCode != null and dto.cardCode != ''">
+            and CARD_CODE like concat('%', #{dto.cardCode}, '%')
+        </if>
+        <if test="dto.startTime != null and dto.endTime != null">
+            and SWIPE_TIME &gt;= #{dto.startTime} and SWIPE_TIME &lt;= #{dto.endTime}
+        </if>
+        order by  SWIPE_TIME desc
+    </select>
+    <select id="listCard3ByDoorId" resultType="com.hss.modules.door.entity.DoorData">
+        select * from DOOR_DATA where ACCESS_TYPE = #{inout} and DOOR_ID = #{doorId} and OPEN_TYPE like concat('Card','%')
+        order by SWIPE_TIME desc
+    </select>
+</mapper>

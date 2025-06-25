@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.maintain.mapper.MaintainRecordOPMapper">
+
+    <select id="listByRecordId" resultType="com.hss.modules.maintain.entity.MaintainRecordOP">
+        select * from MT_BD_MAINTAIN_RECORD_OP where RECORD_ID = #{recordId}
+    </select>
+</mapper>

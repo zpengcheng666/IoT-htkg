@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.InventoryMapper">
+    <insert id="update">
+        update BP_INVENTORY set QUANTITY = #{quantity}, VERSION = #{version} + 1 where ID = #{id} and VERSION = version
+    </insert>
+
+    <select id="get" resultType="com.hss.modules.spare.entity.InventoryEntity">
+        select * from BP_INVENTORY where AREA_ID = #{areaId} and ITEM_ID = #{itemId}
+    </select>
+    <sql id="show">
+        SELECT
+        w.NAME AS WAREHOUSE_NAME,
+        a.NAME AREA_NAME,
+        r.QUANTITY,
+        it.ITEM_NAME,
+        it.ITEM_NO,
+        it.ITEM_TYPE,
+        r.WAREHOUSE_Id,
+        r.AREA_ID,
+        r.ITEM_ID
+        FROM
+        bp_inventory r
+        INNER JOIN bp_warehouse w ON r.WAREHOUSE_ID = w.ID
+        INNER JOIN bp_area a ON r.AREA_ID = a.ID
+        INNER JOIN bp_item it ON r.ITEM_ID = it.ID
+        WHERE
+        r.QUANTITY > 0
+        <if test="dto.warehouseId != null and dto.warehouseId != ''"> and r.WAREHOUSE_ID = #{dto.warehouseId}</if>
+        <if test="dto.areaId != null and dto.areaId != ''">and r.AREA_ID = #{dto.areaId}</if>
+        <if test="dto.itemId != null and dto.itemId != ''">and r.ITEM_ID = #{dto.itemId}</if>
+    </sql>
+    <select id="pageByWarehouse" resultType="com.hss.modules.spare.model.InventoryShowVO">
+        <include refid="show"></include>
+        order by r.WAREHOUSE_ID, it.ITEM_TYPE
+    </select>
+    <select id="pageByArea" resultType="com.hss.modules.spare.model.InventoryShowVO">
+        <include refid="show"></include>
+        order by r.WAREHOUSE_ID, r.AREA_ID, it.ITEM_TYPE
+    </select>
+    <select id="pageByItem" resultType="com.hss.modules.spare.model.InventoryShowVO">
+        <include refid="show"></include>
+        order by it.ITEM_TYPE, r.WAREHOUSE_ID, r.AREA_ID
+    </select>
+    <select id="pageItem" resultType="com.hss.modules.spare.model.PageItemVO">
+        select inv.ITEM_ID, it.ITEM_NAME, it.ITEM_NO, ip.TYPE_NAME as ITEM_TYPE_NAME, inv.WAREHOUSE_ID, inv.AREA_ID, inv.QUANTITY
+        from HSS.BP_INVENTORY inv inner join HSS.BP_ITEM it on inv.ITEM_ID = it.ID inner join HSS.BP_ITEM_TYPE ip on it.ITEM_TYPE = ip.ID
+        where inv.QUANTITY &gt; 0
+          <if test="dto.itemName != null and dto.itemName != ''"> and it.ITEM_NAME like concat('%', #{dto.itemName}, '%')</if>
+          <if test="dto.itemTypeId != null and dto.itemTypeId != ''"> and ip.ID =#{dto.itemTypeId}</if>
+          <if test="dto.warehouseId != null and dto.warehouseId != ''"> and ip.WAREHOUSE_ID =#{dto.warehouseId}</if>
+          <if test="dto.areaId != null and dto.areaId != ''"> and ip.AREA_ID =#{dto.areaId}</if>
+        order by ip.TYPE_NAME
+    </select>
+</mapper>

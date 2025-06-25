@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.spare.mapper.InventoryHistoryEntityMapper">
+
+    <select id="historyPage" resultType="com.hss.modules.spare.model.ItemOptPageVO">
+        select h.FORM_TYPE, it.ITEM_NAME, it.ITEM_NO, h.AREA_ID, h.QUANTITY, h.CREATE_TIME
+        from HSS.BP_INVENTORY_HISTORY h inner join BP_ITEM it on h.ITEM_ID = it.ID <where>
+        <if test="dto.optType != null and dto.optType != -1">h.FORM_TYPE = #{dto.optType}</if>
+        <if test="dto.itemId != null and dto.itemId != ''">and it.ID = #{dto.itemId}</if>
+        <if test="dto.warehouseId != null and dto.warehouseId != ''">and h.WAREHOUSE_ID = #{dto.warehouseId}</if>
+        <if test="dto.areaId != null and dto.areaId != ''">and h.AREA_ID = #{dto.areaId}</if>
+    </where>
+        order by h.ID desc
+    </select>
+</mapper>

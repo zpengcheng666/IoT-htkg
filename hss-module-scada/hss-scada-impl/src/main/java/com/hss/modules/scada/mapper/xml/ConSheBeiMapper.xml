@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.scada.mapper.ConSheBeiMapper">
+
+
+    <select id="queryPage" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.* from CON_SHEBEI d
+            <if test="sceneId != null and sceneId != ''">
+                inner join GS_CHANGJING_SHEBEI s on d.ID = s.DEVICE_ID
+            </if>
+        <where>
+            <if test="sceneId != null and sceneId != ''">
+                and  s.SCENE_ID = #{sceneId}
+            </if>
+            <if test="deviceTypeId != null and deviceTypeId != ''">
+                and  d.DEVICE_TYPE_ID = #{deviceTypeId}
+            </if>
+            <if test="name != null and name != ''">
+                and d.NAME like concat('%',#{name},'%')
+            </if>
+        </where>
+        order by d.CREATED_TIME desc NULLS LAST
+    </select>
+
+    <select id="queryPage2" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.* from CON_SHEBEI d
+        <where>
+            <if test="name != null and name != ''">
+                and d.NAME like concat('%',#{name},'%')
+            </if>
+        </where>
+        order by d.CREATED_TIME desc NULLS LAST
+    </select>
+
+    <select id="listBySceneId" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.*,r.SORT_NUMBER from CON_SHEBEI d
+            inner join GS_CHANGJING_SHEBEI r on d.ID = r.DEVICE_ID
+        where r.SCENE_ID = #{sceneId}
+    </select>
+    <select id="listPublishBySceneId" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.ID, d.NAME from CON_SHEBEI d
+        inner join GS_CHANGJING_SHEBEI r on d.ID = r.DEVICE_ID
+        inner join T_DEVICE_TYPE_MANAGEMENT t on d.DEVICE_TYPE_ID = t.id
+        where r.SCENE_ID = #{sceneId} and  t.TYPE in
+        <foreach collection="deviceTypes" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        order by r.SORT_NUMBER
+    </select>
+    <select id="pageVariable" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select distinct d.* from CON_SHEBEI d inner join CON_SHEBEI_SHUXING a on d.ID = a.DEVICE_ID
+        where d.ID in
+        <foreach collection="deviceIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+         and a.IS_ASSOCIATE_VAR = 1
+        <if test="name != null and name != ''">and d.NAME like concat('%',#{name},'%')</if>
+    </select>
+    <select id="ListCamera" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.ID,d.NAME from CON_SHEBEI d inner join T_DEVICE_TYPE_MANAGEMENT t on d.DEVICE_TYPE_ID = t.ID  where t.TYPE in
+        <foreach collection="deviceTypes" item="item" open="(" close=")" separator=",">
+           #{item}
+        </foreach>
+
+    </select>
+    <select id="listDeviceTypeByDeviceIds" resultType="com.hss.modules.scada.model.ConSheBeiDoorOptions">
+        select t.ID,t.NAME,t.TYPE from CON_SHEBEI d inner join T_DEVICE_TYPE_MANAGEMENT t on d.DEVICE_TYPE_ID = t.ID where d.ID in
+        <foreach collection="deviceIds" item="id" open="(" close=")" separator=",">
+        #{id}
+        </foreach>
+        group by t.ID, t.NAME, t.TYPE
+    </select>
+    <select id="listIdBySubsystem" resultType="java.lang.String">
+        select d.DEVICE_ID from GS_CHANGJING s inner join GS_CHANGJING_SHEBEI d on s.ID = d.SCENE_ID where s.SUB_SYSTEM = #{subsystem}
+    </select>
+    <select id="listByDeviceTypeId" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select * from CON_SHEBEI where DEVICE_TYPE_ID = #{typeId}
+    </select>
+    <select id="deviceList" resultType="com.hss.modules.scada.model.DeviceListVO">
+        <!--2023-11-04修改-->
+        select d.ID, d.NAME, d.CODE, t.NAME TYPE, d.LOCATION_ID LOCATION_ID ,d.OTHER_NAME
+        from CON_SHEBEI d inner join T_DEVICE_TYPE_MANAGEMENT t on d.DEVICE_TYPE_ID = t.ID
+        <where>
+            <if test="dto.name != null and dto.name != ''">and d.NAME like concat('%',#{dto.name},'%')</if>
+            <if test="dto.code != null and dto.code != ''">and d.CODE like concat('%',#{dto.code},'%')</if>
+            <if test="dto.deviceTypeId != null and dto.deviceTypeId != ''">and d.DEVICE_TYPE_ID = #{dto.deviceTypeId}</if>
+            <if test="ids != null and ids.size > 0">and d.ID in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        order by d.CREATED_TIME desc NULLS LAST
+    </select>
+    <select id="notScenePage" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.* from CON_SHEBEI d left join GS_CHANGJING_SHEBEI r on d.id = r.DEVICE_ID where r.DEVICE_ID is null
+        <if test="name != null and name != ''">and d.NAME like concat('%',#{name},'%')</if>
+        <if test="deviceTypeId != null and deviceTypeId != ''">
+            and  d.DEVICE_TYPE_ID = #{deviceTypeId}
+        </if>
+        order by d.CREATED_TIME desc NULLS LAST
+    </select>
+    <select id="ListIdByNotScenePage" resultType="java.lang.String">
+        select d.id from CON_SHEBEI d left join GS_CHANGJING_SHEBEI r on d.id = r.DEVICE_ID where r.DEVICE_ID is null
+            <if test="name != null and name != ''">
+                and d.NAME like concat('%',#{name},'%')
+            </if>
+    </select>
+    <select id="listDeviceIdAndNameBySceneIdsAndAttrEnName"
+            resultType="com.hss.modules.scada.entity.ConSheBei">
+        select a.DEVICE_ID ID, a.DEVICE_NAME NAME from GS_CHANGJING_SHEBEI r
+            inner join CON_SHEBEI_SHUXING a on r.DEVICE_ID = a.DEVICE_ID
+        where a.EN_NAME = #{attrEnName} and r.SCENE_ID in
+        <foreach collection="sceneIds" item="sceneId" open="(" separator="," close=")">
+        #{sceneId}
+        </foreach>
+
+    </select>
+    <select id="countByDeviceTypeId" resultType="java.lang.Integer">
+        select count(*) from CON_SHEBEI where DEVICE_TYPE_ID = #{deviceTypeId}
+    </select>
+    <select id="listGatewayAndDeviceByEnName" resultType="com.hss.modules.scada.model.GatewayDevice">
+        select d.WGID GATEWAY_ID, a.DEVICE_ID from CON_DIANWEI d inner join CON_SHEBEI_SHUXING a on d.id = a.VARIABLE_ID where a.EN_NAME = #{attrEnName}
+    </select>
+    <select id="getPointDeviceIdByDeviceIdAndAttrEnName" resultType="java.lang.String">
+        select p.DEVICE_ID from CON_DIANWEI p inner join CON_SHEBEI_SHUXING a on p.ID = a.VARIABLE_ID
+        where a.DEVICE_ID = #{deviceId} and EN_NAME = #{attrEnName}
+    </select>
+    <select id="statByDeviceType" resultType="com.hss.modules.scada.model.StateByDeviceTypeDeviceBO">
+        select count(*) count, DEVICE_TYPE_ID from CON_SHEBEI group by DEVICE_TYPE_ID
+    </select>
+    <select id="statByDevices" resultType="com.hss.modules.scada.model.StateByDeviceTypeDeviceBO">
+        select count(*) count, DEVICE_TYPE_ID from CON_SHEBEI where SUBSYSTEM = #{subSystems} group by DEVICE_TYPE_ID
+    </select>
+    <select id="listAttrIdAndDeviceIdBySceneId" resultType="com.hss.modules.scada.entity.ConDeviceAttribute">
+        select a.ID, a.DEVICE_ID, a.ATTR_ID, a.VARIABLE_ID, a.EXPRESSION, a.IS_ASSOCIATE from GS_CHANGJING_SHEBEI gs inner join CON_SHEBEI_SHUXING  a on gs.DEVICE_ID = a.DEVICE_ID
+        where gs.SCENE_ID = #{sceneId} order by a.SORT_NUMBER asc
+    </select>
+    <select id="listBySceneIdAndType" resultType="com.hss.modules.scada.entity.ConSheBei">
+        select d.ID, d.NAME, d.OTHER_NAME, g.SORT_NUMBER  from CON_SHEBEI d inner join GS_CHANGJING_SHEBEI g on d.ID = g.DEVICE_ID inner join T_DEVICE_TYPE_MANAGEMENT t on d.DEVICE_TYPE_ID = t.ID where g.SCENE_ID = #{sceneId}
+        and t.TYPE in <foreach collection="types" open="(" separator="," item="type" close=")">#{type}</foreach>
+    </select>
+</mapper>

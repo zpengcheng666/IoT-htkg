@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.scada.mapper.GSChangJingSheBeiMapper">
+    <delete id="deleteBySceneId">
+        delete GS_CHANGJING_SHEBEI where SCENE_ID = #{sceneId}
+    </delete>
+    <delete id="deleteByDeviceId">
+        delete GS_CHANGJING_SHEBEI where DEVICE_ID = #{deviceId}
+    </delete>
+
+    <select id="listDeviceIdsBySceneId" resultType="java.lang.String">
+        select DEVICE_ID from GS_CHANGJING_SHEBEI where SCENE_ID = #{sceneId}
+    </select>
+    <select id="getSceneIdByDeviceId" resultType="java.lang.String">
+        select TOP 1 SCENE_ID from GS_CHANGJING_SHEBEI where DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listSceneIdByDeviceId" resultType="java.lang.String">
+        select SCENE_ID from GS_CHANGJING_SHEBEI where DEVICE_ID = #{deviceId}
+    </select>
+    <select id="listSortDevice" resultType="com.hss.modules.scada.model.DeviceSortVO">
+        select r.ID, d.NAME, r.SORT_NUMBER, r.DEVICE_ID from GS_CHANGJING_SHEBEI r inner join CON_SHEBEI d on r.DEVICE_ID = d.ID
+        where r.SCENE_ID = #{sceneId} order by SORT_NUMBER
+    </select>
+</mapper>

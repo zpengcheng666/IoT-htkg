@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.facility.mapper.DeviceRunLogMapper">
+
+    <select id="getLastByDeviceId" resultType="com.hss.modules.facility.entity.DeviceRunLog">
+        select * from DF_DEVICE_RUNLOG where DEV_ID = #{deviceId} order by START_TIME desc limit 1
+    </select>
+    <select id="page" resultType="com.hss.modules.facility.entity.DeviceRunLog">
+        Select l.*, d.NAME devName from DF_DEVICE_RUNLOG l inner join DF_BI_DEVICE d on l.DEV_ID = d.ID
+        <where>
+            <if test="deviceName != null and deviceName != ''"> d.NAME like concat('%', #{deviceName}, '%')</if>
+        <if test="typeIds != null and typeIds.size != 0">
+            and d.CLASS_ID in
+            <foreach collection="typeIds" open="(" item="typeId" separator="," close=")"> #{typeId}</foreach>
+        </if>
+        <if test="devId != null and devId != ''">and l.DEV_ID = #{devId}</if>
+        </where>
+        order by l.START_TIME desc
+    </select>
+</mapper>

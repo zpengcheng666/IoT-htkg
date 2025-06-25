@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hss.modules.inOutPosition.mapper.InOutListMapper">
+
+    <select id="listByPublish" resultType="com.hss.modules.inOutPosition.entity.InOutList">
+        select top 1000 * from MT_IN_OUT_LIST where STATUS = 1 and IN_TIME &lt;= #{date} and OUT_TIME &gt;= #{date}
+    </select>
+
+</mapper>
