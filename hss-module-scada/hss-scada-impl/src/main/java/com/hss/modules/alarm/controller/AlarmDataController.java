@@ -108,7 +108,7 @@ public class AlarmDataController extends HssController<AlarmData, IAlarmDataServ
 
     @ApiOperation(value = "终端下拉框", notes = "终端下拉框")
     @GetMapping(value = "/terminalOptiongs")
-    public Result<?> terminalOptiongs(TerminalModel terminalModel) {
+    public Result<?> terminalOptiongs() {
         List<BaseTerminal> list = baseTerminalService.list();
         Integer yjcz = (Integer) 1;
         //筛选过后，重新生成下拉框
